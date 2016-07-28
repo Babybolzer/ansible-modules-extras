@@ -54,6 +54,13 @@ options:
     default: null
     aliases: ['pass', 'pwd']
     choices: []
+  partition:
+    description:
+      - set active-partition
+    required: false
+    default: null
+    aliases: []
+    choices: []
   virtual_server:
     description:
       - slb virtual server name
@@ -107,6 +114,7 @@ EXAMPLES = '''
     host: a10.mydomain.com
     username: myadmin
     password: mypassword
+    partition: mypartition
     virtual_server: vserver1
     virtual_server_ip: 1.1.1.1
     virtual_server_ports:
@@ -170,6 +178,7 @@ def main():
             virtual_server_ip=dict(type='str', aliases=['ip', 'address'], required=True),
             virtual_server_status=dict(type='str', default='enabled', aliases=['status'], choices=['enabled', 'disabled']),
             virtual_server_ports=dict(type='list', required=True),
+            partition=dict(type='str', aliases=['partition'], default=[]),
         )
     )
 
@@ -181,6 +190,7 @@ def main():
     host = module.params['host']
     username = module.params['username']
     password = module.params['password']
+    partition = module.params['partition']
     state = module.params['state']
     write_config = module.params['write_config']
     slb_virtual = module.params['virtual_server']
@@ -196,6 +206,7 @@ def main():
     axapi_base_url = 'https://%s/services/rest/V2.1/?format=json' % host
     session_url = axapi_authenticate(module, axapi_base_url, username, password)
 
+    slb_server_partition = axapi_call(module, session_url + '&method=system.partition.active', json.dumps({'name': partition}))
     slb_virtual_data = axapi_call(module, session_url + '&method=slb.virtual_server.search', json.dumps({'name': slb_virtual}))
     slb_virtual_exists = not axapi_failure(slb_virtual_data)
 

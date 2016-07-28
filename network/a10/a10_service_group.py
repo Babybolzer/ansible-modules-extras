@@ -47,6 +47,13 @@ options:
     default: null
     aliases: ['user', 'admin']
     choices: []
+  partition:
+    description:
+      - set active-partition
+    required: false
+    default: null
+    aliases: []
+    choices: []
   password:
     description:
       - admin password of your A10 Networks device
@@ -109,6 +116,7 @@ EXAMPLES = '''
     host: a10.mydomain.com
     username: myadmin
     password: mypassword
+    partition: mypartition
     service_group: sg-80-tcp
     servers:
       - server: foo1.mydomain.com
@@ -174,6 +182,7 @@ def main():
                                                'src-ip-only-hash',
                                                'src-ip-hash']),
             servers=dict(type='list', aliases=['server', 'member'], default=[]),
+            partition=dict(type='str', aliases=['partition'], default=[]),
         )
     )
 
@@ -185,6 +194,7 @@ def main():
     host = module.params['host']
     username = module.params['username']
     password = module.params['password']
+    partition = module.params['partition']
     state = module.params['state']
     write_config = module.params['write_config']
     slb_service_group = module.params['service_group']
@@ -226,7 +236,8 @@ def main():
 
     # first we authenticate to get a session id
     session_url = axapi_authenticate(module, axapi_base_url, username, password)
-
+    # then we select the active-partition
+    slb_server_partition = axapi_call(module, session_url + '&method=system.partition.active', json.dumps({'name': partition}))
     # then we check to see if the specified group exists
     slb_result = axapi_call(module, session_url + '&method=slb.service_group.search', json.dumps({'name': slb_service_group}))
     slb_service_group_exist = not axapi_failure(slb_result)

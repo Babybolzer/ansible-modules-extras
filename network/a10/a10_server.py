@@ -46,6 +46,13 @@ options:
       - admin password of your A10 Networks device
     required: true
     aliases: ['pass', 'pwd']
+  partition:
+    description:
+      - set active-partition
+    required: false
+    default: null
+    aliases: []
+    choices: []
   server_name:
     description:
       - slb server name
@@ -86,6 +93,7 @@ EXAMPLES = '''
     host: a10.mydomain.com
     username: myadmin
     password: mypassword
+    partition: mypartition
     server: test
     server_ip: 1.1.1.100
     server_ports:
@@ -141,6 +149,7 @@ def main():
             server_ip=dict(type='str', aliases=['ip', 'address']),
             server_status=dict(type='str', default='enabled', aliases=['status'], choices=['enabled', 'disabled']),
             server_ports=dict(type='list', aliases=['port'], default=[]),
+            partition=dict(type='str', aliases=['partition'], default=[]),
         )
     )
 
@@ -150,6 +159,7 @@ def main():
     )
 
     host = module.params['host']
+    partition = module.params['partition']
     username = module.params['username']
     password = module.params['password']
     state = module.params['state']
@@ -183,6 +193,8 @@ def main():
 
     if slb_server_status:
         json_post['server']['status'] = axapi_enabled_disabled(slb_server_status)
+
+    slb_server_partition = axapi_call(module, session_url + '&method=system.partition.active', json.dumps({'name': partition}))
 
     slb_server_data = axapi_call(module, session_url + '&method=slb.server.search', json.dumps({'name': slb_server}))
     slb_server_exists = not axapi_failure(slb_server_data)
