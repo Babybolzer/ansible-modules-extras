@@ -107,15 +107,15 @@ EXAMPLES = '''
 
 RETURN = '''
 msg:
-    description: an error messages that describes why the module failed
-    returned: fail
-    type: string
-    sample: "port_num entries in the port definitions must be integers"
+  description: an error messages that describes why the module failed
+  returned: fail
+  type: string
+  sample: "port_num entries in the port definitions must be integers"
 content:
-    description: the full info regarding the slb_server
-    returned: success
-    type: string
-    sample: "mynewserver"
+  description: the full info regarding the slb_server
+  returned: success
+  type: string
+  sample: "mynewserver"
 '''
 
 

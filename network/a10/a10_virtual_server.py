@@ -133,15 +133,15 @@ EXAMPLES = '''
 
 RETURN = '''
 msg:
-    description: an error messages that describes why the module failed
-    returned: fail
-    type: string
-    sample: "port definitions must define the port field"
+  description: an error messages that describes why the module failed
+  returned: fail
+  type: string
+  sample: "port definitions must define the port field"
 content:
-    description: the full info regarding the slb_virtual
-    returned: success
-    type: string
-    sample: "mynewvirtualserver"
+  description: the full info regarding the slb_virtual
+  returned: success
+  type: string
+  sample: "mynewvirtualserver"
 '''
 
 VALID_PORT_FIELDS = ['port', 'protocol', 'service_group', 'status']
