@@ -48,6 +48,7 @@ options:
     aliases: ['user', 'admin']
     choices: []
   partition:
+    version_added: "2.2"
     description:
       - set active-partition
     required: false

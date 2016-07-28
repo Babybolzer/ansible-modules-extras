@@ -55,6 +55,7 @@ options:
     aliases: ['pass', 'pwd']
     choices: []
   partition:
+    version_added: "2.2"
     description:
       - set active-partition
     required: false
