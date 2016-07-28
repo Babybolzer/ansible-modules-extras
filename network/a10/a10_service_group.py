@@ -132,6 +132,19 @@ EXAMPLES = '''
 
 '''
 
+RETURN = '''
+msg:
+    description: an error messages that describes why the module failed
+    returned: fail
+    type: string
+    sample: "server port definitions must be integers"
+content:
+    description: the full info regarding the slb_service_group
+    returned: success
+    type: string
+    sample: "mynewservicegroup"
+'''
+
 VALID_SERVICE_GROUP_FIELDS = ['name', 'protocol', 'lb_method']
 VALID_SERVER_FIELDS = ['server', 'port', 'status']
 
