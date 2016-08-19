@@ -38,44 +38,36 @@ options:
       - hostname or ip of your A10 Networks device
     required: true
     default: null
-    aliases: []
-    choices: []
   username:
     description:
       - admin account of your A10 Networks device
     required: true
     default: null
     aliases: ['user', 'admin']
-    choices: []
   password:
     description:
       - admin password of your A10 Networks device
     required: true
     default: null
     aliases: ['pass', 'pwd']
-    choices: []
   partition:
     version_added: "2.2"
     description:
       - set active-partition
     required: false
     default: null
-    aliases: []
-    choices: []
   virtual_server:
     description:
       - slb virtual server name
     required: true
     default: null
     aliases: ['vip', 'virtual']
-    choices: []
   virtual_server_ip:
     description:
       - slb virtual server ip address
     required: false
     default: null
     aliases: ['ip', 'address']
-    choices: []
   virtual_server_status:
     description:
       - slb virtual server status
@@ -132,11 +124,6 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-msg:
-  description: an error messages that describes why the module failed
-  returned: fail
-  type: string
-  sample: "port definitions must define the port field"
 content:
   description: the full info regarding the slb_virtual
   returned: success
@@ -192,7 +179,7 @@ def main():
             virtual_server_ip=dict(type='str', aliases=['ip', 'address'], required=True),
             virtual_server_status=dict(type='str', default='enabled', aliases=['status'], choices=['enabled', 'disabled']),
             virtual_server_ports=dict(type='list', required=True),
-            partition=dict(type='str', aliases=['partition'], default=[]),
+            partition=dict(type='str', default=[]),
         )
     )
 

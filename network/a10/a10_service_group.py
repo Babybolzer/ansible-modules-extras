@@ -38,37 +38,30 @@ options:
       - hostname or ip of your A10 Networks device
     required: true
     default: null
-    aliases: []
-    choices: []
   username:
     description:
       - admin account of your A10 Networks device
     required: true
     default: null
     aliases: ['user', 'admin']
-    choices: []
   partition:
     version_added: "2.2"
     description:
       - set active-partition
     required: false
     default: null
-    aliases: []
-    choices: []
   password:
     description:
       - admin password of your A10 Networks device
     required: true
     default: null
     aliases: ['pass', 'pwd']
-    choices: []
   service_group:
     description:
       - slb service-group name
     required: true
     default: null
     aliases: ['service', 'pool', 'group']
-    choices: []
   service_group_protocol:
     description:
       - slb service-group protocol
@@ -90,8 +83,6 @@ options:
         specify the C(status:). See the examples below for details.
     required: false
     default: null
-    aliases: []
-    choices: []
   write_config:
     description:
       - If C(yes), any changes will cause a write of the running configuration
@@ -133,11 +124,6 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-msg:
-  description: an error messages that describes why the module failed
-  returned: fail
-  type: string
-  sample: "server port definitions must be integers"
 content:
   description: the full info regarding the slb_service_group
   returned: success
@@ -196,7 +182,7 @@ def main():
                                                'src-ip-only-hash',
                                                'src-ip-hash']),
             servers=dict(type='list', aliases=['server', 'member'], default=[]),
-            partition=dict(type='str', aliases=['partition'], default=[]),
+            partition=dict(type='str', default=[]),
         )
     )
 

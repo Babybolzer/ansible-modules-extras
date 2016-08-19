@@ -52,8 +52,6 @@ options:
       - set active-partition
     required: false
     default: null
-    aliases: []
-    choices: []
   server_name:
     description:
       - slb server name
@@ -106,11 +104,6 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-msg:
-  description: an error messages that describes why the module failed
-  returned: fail
-  type: string
-  sample: "port_num entries in the port definitions must be integers"
 content:
   description: the full info regarding the slb_server
   returned: success
@@ -164,7 +157,7 @@ def main():
             server_ip=dict(type='str', aliases=['ip', 'address']),
             server_status=dict(type='str', default='enabled', aliases=['status'], choices=['enabled', 'disabled']),
             server_ports=dict(type='list', aliases=['port'], default=[]),
-            partition=dict(type='str', aliases=['partition'], default=[]),
+            partition=dict(type='str', default=[]),
         )
     )
 
