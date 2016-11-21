@@ -193,6 +193,12 @@ options:
       - Consider switching to HTTP_POST by using C(CLOUDSTACK_METHOD=post) to increase the HTTP_GET size limit of 2KB to 32 KB.
     required: false
     default: null
+  vpc:
+    description:
+      - Name of the VPC.
+    required: false
+    default: null
+    version_added: "2.3"
   force:
     description:
       - Force stop/start the instance if required to apply changes, otherwise a running instance will not be changed.
@@ -204,6 +210,7 @@ options:
       - "If you want to delete all tags, set a empty list e.g. C(tags: [])."
     required: false
     default: null
+    aliases: [ 'tag' ]
   poll_async:
     description:
       - Poll async jobs until job has finished.
@@ -263,7 +270,7 @@ EXAMPLES = '''
     service_offering: Tiny
     ip_to_networks:
       - {'network': NetworkA, 'ip': '10.1.1.1'}
-      - {'network': NetworkB, 'ip': '192.168.1.1'}
+      - {'network': NetworkB, 'ip': '192.0.2.1'}
 
 # Ensure an instance is stopped
 - local_action: cs_instance name=web-vm-1 state=stopped
@@ -493,15 +500,21 @@ class AnsibleCloudStackInstance(AnsibleCloudStack):
         instance = self.instance
         if not instance:
             instance_name = self.get_or_fallback('name', 'display_name')
-
-            args                = {}
-            args['account']     = self.get_account(key='name')
-            args['domainid']    = self.get_domain(key='id')
-            args['projectid']   = self.get_project(key='id')
+            vpc_id = self.get_vpc(key='id')
+            args = {
+                'account': self.get_account(key='name'),
+                'domainid': self.get_domain(key='id'),
+                'projectid': self.get_project(key='id'),
+                'vpcid': vpc_id,
+            }
             # Do not pass zoneid, as the instance name must be unique across zones.
             instances = self.cs.listVirtualMachines(**args)
             if instances:
                 for v in instances['virtualmachine']:
+                    # Due the limitation of the API, there is no easy way (yet) to get only those VMs
+                    # not belonging to a VPC.
+                    if not vpc_id and self.is_vm_in_vpc(vm=v):
+                        continue
                     if instance_name.lower() in [ v['name'].lower(), v['displayname'].lower(), v['id'] ]:
                         self.instance = v
                         break
@@ -552,12 +565,13 @@ class AnsibleCloudStackInstance(AnsibleCloudStack):
         if not network_names:
             return None
 
-        args                = {}
-        args['account']     = self.get_account(key='name')
-        args['domainid']    = self.get_domain(key='id')
-        args['projectid']   = self.get_project(key='id')
-        args['zoneid']      = self.get_zone(key='id')
-
+        args = {
+            'account': self.get_account(key='name'),
+            'domainid': self.get_domain(key='id'),
+            'projectid': self.get_project(key='id'),
+            'zoneid': self.get_zone(key='id'),
+            'vpcid': self.get_vpc(key='id'),
+        }
         networks = self.cs.listNetworks(**args)
         if not networks:
             self.module.fail_json(msg="No networks available")
@@ -936,6 +950,7 @@ def main():
         ssh_key = dict(default=None),
         force = dict(type='bool', default=False),
         tags = dict(type='list', aliases=[ 'tag' ], default=None),
+        vpc = dict(default=None),
         poll_async = dict(type='bool', default=True),
     ))
 

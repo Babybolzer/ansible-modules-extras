@@ -30,8 +30,8 @@ description:
     - Manage slb service-group objects on A10 Networks devices via aXAPI
 author: "Mischa Peters (@mischapeters)"
 notes:
-    - Requires A10 Networks aXAPI 2.1
     - When a server doesn't exist and is added to the service-group the server will be created
+extends_documentation_fragment: a10
 options:
   host:
     description:
@@ -58,20 +58,20 @@ options:
     aliases: ['pass', 'pwd']
   service_group:
     description:
-      - slb service-group name
+      - SLB service-group name.
     required: true
     default: null
     aliases: ['service', 'pool', 'group']
   service_group_protocol:
     description:
-      - slb service-group protocol
+      - SLB service-group protocol.
     required: false
     default: tcp
     aliases: ['proto', 'protocol']
     choices: ['tcp', 'udp']
   service_group_method:
     description:
-      - slb service-group loadbalancing method
+      - SLB service-group loadbalancing method.
     required: false
     default: round-robin
     aliases: ['method']
@@ -83,6 +83,7 @@ options:
         specify the C(status:). See the examples below for details.
     required: false
     default: null
+<<<<<<< HEAD
   write_config:
     description:
       - If C(yes), any changes will cause a write of the running configuration
@@ -99,6 +100,8 @@ options:
     required: false
     default: 'yes'
     choices: ['yes', 'no']
+=======
+>>>>>>> upstream/devel
 
 '''
 
@@ -349,4 +352,5 @@ from ansible.module_utils.basic import *
 from ansible.module_utils.urls import *
 from ansible.module_utils.a10 import *
 
-main()
+if __name__ == '__main__':
+    main()

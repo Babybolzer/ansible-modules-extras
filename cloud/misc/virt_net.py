@@ -97,7 +97,7 @@ EXAMPLES = '''
 
 # Gather information about network managed by 'libvirt' remotely using uri
 - virt_net: command=info uri='{{ item }}'
-  with_items: libvirt_uris
+  with_items: "{{ libvirt_uris }}"
   register: networks
 
 # Ensure that a network is active (needs to be defined and built first)
@@ -117,7 +117,6 @@ VIRT_FAILED = 1
 VIRT_SUCCESS = 0
 VIRT_UNAVAILABLE=2
 
-import sys
 
 try:
     import libvirt
@@ -132,6 +131,9 @@ except ImportError:
     HAS_XML = False
 else:
     HAS_XML = True
+
+from ansible.module_utils.basic import AnsibleModule
+
 
 ALL_COMMANDS = []
 ENTRY_COMMANDS = ['create', 'status', 'start', 'stop',
@@ -345,7 +347,7 @@ class LibvirtConnection(object):
             return self.conn.networkDefineXML(xml)
         else:
             try:
-                state = self.find_entry(entryid)
+                self.find_entry(entryid)
             except:
                 return self.module.exit_json(changed=True)
 
@@ -428,17 +430,17 @@ class VirtNetwork(object):
 
             try:
                 results[entry]["forward_mode"] = self.conn.get_forward(entry)
-            except ValueError as e:
+            except ValueError:
                 pass
 
             try:
                 results[entry]["domain"] = self.conn.get_domain(entry)
-            except ValueError as e:
+            except ValueError:
                 pass
 
             try:
                 results[entry]["macaddress"] = self.conn.get_macaddress(entry)
-            except ValueError as e:
+            except ValueError:
                 pass
 
         facts = dict()
@@ -464,7 +466,7 @@ def core(module):
 
     if state and command == 'list_nets':
         res = v.list_nets(state=state)
-        if type(res) != dict:
+        if not isinstance(res, dict):
             res = { command: res }
         return VIRT_SUCCESS, res
 
@@ -521,29 +523,29 @@ def core(module):
                         res = {'changed': mod, 'modified': name}
                 return VIRT_SUCCESS, res
             res = getattr(v, command)(name)
-            if type(res) != dict:
+            if not isinstance(res, dict):
                 res = { command: res }
             return VIRT_SUCCESS, res
 
         elif hasattr(v, command):
             res = getattr(v, command)()
-            if type(res) != dict:
+            if not isinstance(res, dict):
                 res = { command: res }
             return VIRT_SUCCESS, res
 
         else:
-            module.fail_json(msg="Command %s not recognized" % basecmd)
+            module.fail_json(msg="Command %s not recognized" % command)
 
-    if autostart:
+    if autostart is not None:
         if not name:
             module.fail_json(msg = "state change requires a specified name")
 
         res['changed'] = False
-        if autostart == 'yes':
+        if autostart:
             if not v.get_autostart(name):
                 res['changed'] = True
                 res['msg'] = v.set_autostart(name, True)
-        elif autostart == 'no':
+        else:
             if v.get_autostart(name):
                 res['changed'] = True
                 res['msg'] = v.set_autostart(name, False)
@@ -562,7 +564,7 @@ def main():
             command = dict(choices=ALL_COMMANDS),
             uri = dict(default='qemu:///system'),
             xml = dict(),
-            autostart = dict(choices=['yes', 'no'])
+            autostart = dict(type='bool')
         ),
         supports_check_mode = True
     )
@@ -580,7 +582,7 @@ def main():
     rc = VIRT_SUCCESS
     try:
         rc, result = core(module)
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg=str(e))
 
     if rc != 0: # something went wrong emit the msg
@@ -589,6 +591,5 @@ def main():
         module.exit_json(**result)
 
 
-# import module snippets
-from ansible.module_utils.basic import *
-main()
+if __name__ == '__main__':
+    main()
