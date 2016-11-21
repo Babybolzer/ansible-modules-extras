@@ -49,7 +49,7 @@ options:
     default: null
     aliases: ['pass', 'pwd']
   partition:
-    version_added: "2.2"
+    version_added: "2.3"
     description:
       - set active-partition
     required: false
