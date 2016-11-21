@@ -83,7 +83,6 @@ options:
         specify the C(status:). See the examples below for details.
     required: false
     default: null
-<<<<<<< HEAD
   write_config:
     description:
       - If C(yes), any changes will cause a write of the running configuration
@@ -100,8 +99,6 @@ options:
     required: false
     default: 'yes'
     choices: ['yes', 'no']
-=======
->>>>>>> upstream/devel
 
 '''
 
