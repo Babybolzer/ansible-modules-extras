@@ -31,20 +31,6 @@ description:
 author: "Mischa Peters (@mischapeters)"
 extends_documentation_fragment: a10
 options:
-  host:
-    description:
-      - hostname or ip of your A10 Networks device
-    required: true
-  username:
-    description:
-      - admin account of your A10 Networks device
-    required: true
-    aliases: ['user', 'admin']
-  password:
-    description:
-      - admin password of your A10 Networks device
-    required: true
-    aliases: ['pass', 'pwd']
   partition:
     version_added: "2.3"
     description:
