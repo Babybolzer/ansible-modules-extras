@@ -66,22 +66,6 @@ options:
         specify the C(status:). See the examples below for details.
     required: false
     default: null
-  write_config:
-    description:
-      - If C(yes), any changes will cause a write of the running configuration
-        to non-volatile memory. This will save I(all) configuration changes,
-        including those that may have been made manually or through other modules,
-        so care should be taken when specifying C(yes).
-    required: false
-    default: "no"
-    choices: ["yes", "no"]
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be used
-        on personally controlled devices using self-signed certificates.
-    required: false
-    default: 'yes'
-    choices: ['yes', 'no']
 
 '''
 
